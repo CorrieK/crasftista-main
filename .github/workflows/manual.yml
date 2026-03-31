@@ -1,4 +1,4 @@
-name: Trigger Multi-Pipeline
+name: Multi-Pipeline Trigger
 
 on:
   push:
