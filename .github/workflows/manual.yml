@@ -1,0 +1,30 @@
+name: Trigger Multi-Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+jobs:
+  trigger-huawei:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Select Pipeline and Trigger
+        run: |
+          # 1. Determine which branch was pushed
+          BRANCH_NAME="${{ github.ref_name }}"
+          
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "Targeting PROD Pipeline..."
+            TARGET_URL="${{ secrets.HW_PROD_WEBHOOK }}"
+          else
+            echo "Targeting DEV Pipeline for branch $BRANCH_NAME..."
+            TARGET_URL="${{ secrets.HW_DEV_WEBHOOK }}"
+          fi
+
+          # 2. Call the specific CodeArts API
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "{\"sources\": [{\"branch\": \"$BRANCH_NAME\"}]}" \
+            "$TARGET_URL"
