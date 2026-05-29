@@ -1,0 +1,27 @@
+name: Slack Triggered CodeArts Pipeline
+
+on:
+  repository_dispatch:
+    types: [slack-trigger]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Dynamically switch to the branch passed from Slack
+      - name: Checkout Specific Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.branch }}
+
+      # 2. Trigger the CodeArts Pipeline via API
+      - name: Trigger CodeArts
+        run: |
+          echo "Triggering CodeArts for branch: ${{ github.event.client_payload.branch }}"
+          curl -X POST "${{ secrets.CODEARTS_TRIGGER_URL }}" \
+               -H "Content-Type: application/json" \
+               -H "Authorization: Bearer ${{ secrets.CODEARTS_TOKEN }}" \
+               -d '{
+                 "branch": "'"${{ github.event.client_payload.branch }}"'",
+                 "commit_id": "${{ github.sha }}"
+               }'
