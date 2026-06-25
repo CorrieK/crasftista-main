@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    IMAGE_TAG: $CODEBUILD_RESOLVED_SOURCE_VERSION
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging into ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}
+
+  build:
+    commands:
+      - echo Building images...
+      - |
+        for SERVICE in catalogue frontend recommendation voting; do
+          docker build -t $ECR_REGISTRY/$SERVICE:$IMAGE_TAG $SERVICE/
+          docker tag $ECR_REGISTRY/$SERVICE:$IMAGE_TAG $ECR_REGISTRY/$SERVICE:latest
+        done
+
+  post_build:
+    commands:
+      - echo Pushing images...
+      - |
+        for SERVICE in catalogue frontend recommendation voting; do
+          docker push $ECR_REGISTRY/$SERVICE:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$SERVICE:latest
+        done
+      - |
+        printf '[' > imagedefinitions.json
+        for SERVICE in catalogue frontend recommendation voting; do
+          printf '{"name":"%s","imageUri":"%s/%s:%s"},' $SERVICE $ECR_REGISTRY $SERVICE $IMAGE_TAG >> imagedefinitions.json
+        done
+        truncate -s -1 imagedefinitions.json
+        printf ']' >> imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
