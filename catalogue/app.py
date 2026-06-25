@@ -53,7 +53,10 @@ def get_product(product_id):
 
 def get_system_info():
     hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(hostname)
+    try:
+        ip_address = socket.gethostbyname(hostname)
+    except socket.gaierror:
+        ip_address = "IP not found"
 
     # Additional logic for container and Kubernetes check
     is_container = os.path.exists('/.dockerenv')
