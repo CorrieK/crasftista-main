@@ -17,8 +17,8 @@ phases:
       - echo Building images...
       - |
         for SERVICE in catalogue frontend recommendation voting; do
-          docker build -t $ECR_REGISTRY/$SERVICE:$IMAGE_TAG $SERVICE/
-          docker tag $ECR_REGISTRY/$SERVICE:$IMAGE_TAG $ECR_REGISTRY/$SERVICE:latest
+          docker build -t $ECR_REGISTRY/craftista/$SERVICE:$IMAGE_TAG $SERVICE/
+          docker tag $ECR_REGISTRY/craftista/$SERVICE:$IMAGE_TAG $ECR_REGISTRY/craftista/$SERVICE:latest
         done
 
   post_build:
@@ -26,13 +26,13 @@ phases:
       - echo Pushing images...
       - |
         for SERVICE in catalogue frontend recommendation voting; do
-          docker push $ECR_REGISTRY/$SERVICE:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$SERVICE:latest
+          docker push $ECR_REGISTRY/craftista/$SERVICE:$IMAGE_TAG
+          docker push $ECR_REGISTRY/craftista/$SERVICE:latest
         done
       - |
         printf '[' > imagedefinitions.json
         for SERVICE in catalogue frontend recommendation voting; do
-          printf '{"name":"%s","imageUri":"%s/%s:%s"},' $SERVICE $ECR_REGISTRY $SERVICE $IMAGE_TAG >> imagedefinitions.json
+          printf '{"name":"%s","imageUri":"%s/craftista/%s:%s"},' $SERVICE $ECR_REGISTRY $SERVICE $IMAGE_TAG >> imagedefinitions.json
         done
         truncate -s -1 imagedefinitions.json
         printf ']' >> imagedefinitions.json
