@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: catalogue
-        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.com/catalogue:latest
+        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.com/craftista/catalogue:latest
         ports:
         - containerPort: 5000
         resources:
@@ -53,7 +53,7 @@ spec:
     spec:
       containers:
       - name: recommendation
-        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.comrecommendation:latest
+        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.com/craftista/recommendation:latest
         ports:
         - containerPort: 8080
         resources:
@@ -91,7 +91,7 @@ spec:
     spec:
       containers:
       - name: voting
-        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.com/voting:latest
+        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.com/craftista/voting:latest
         ports:
         - containerPort: 8080
         resources:
@@ -129,7 +129,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
+        image: 590765960687.dkr.ecr.eu-west-2.amazonaws.com/craftista/frontend:latest
         ports:
         - containerPort: 3000
         resources:
